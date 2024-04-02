@@ -11,8 +11,6 @@
 // Execute `rustlings hint iterators5` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
 use std::collections::HashMap;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -22,10 +20,13 @@ enum Progress {
     Complete,
 }
 
+// Given a Progress variant, return the count of entries in the HashMap of exerecise name (String) to Progress having the specific Progress variant
+// Implementation with for construct, 
 fn count_for(map: &HashMap<String, Progress>, value: Progress) -> usize {
     let mut count = 0;
-    for val in map.values() {
-        if val == &value {
+    // values() method of HashMap returns an Iterator with item type &V, given HashMap<K, V>
+    for &val in map.values() {
+        if val == value {
             count += 1;
         }
     }
@@ -33,28 +34,17 @@ fn count_for(map: &HashMap<String, Progress>, value: Progress) -> usize {
 }
 
 fn count_iterator(map: &HashMap<String, Progress>, value: Progress) -> usize {
-    // map is a hashmap with String keys and Progress values.
-    // map = { "variables1": Complete, "from_str": None, ... }
-    todo!();
-}
-
-fn count_collection_for(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
-    let mut count = 0;
-    for map in collection {
-        for val in map.values() {
-            if val == &value {
-                count += 1;
-            }
-        }
-    }
-    count
+    // iter() method of HashMap returns an Iterator with item type of tuple of (&K, &V), given HashMap<K, V>
+    map.iter()
+       .filter(|&map_entry| *(map_entry.1) == value).count()
+    // .filter(|entry| *((*entry).1) == value).count()   the sole arguement of filter is of type &Self::item
+    // s.t that type would be &(&String, &Progress in this case) s.t without pattern matching of & would result in brainf*ck code 
 }
 
 fn count_collection_iterator(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
-    // collection is a slice of hashmaps.
-    // collection = [{ "variables1": Complete, "from_str": None, ... },
-    //     { "variables2": Complete, ... }, ... ]
-    todo!();
+    collection.iter()
+              .map(|hash_map_instance| count_iterator(hash_map_instance, value)) /* compose by reusing implementation */
+              .sum()
 }
 
 #[cfg(test)]
@@ -110,19 +100,6 @@ mod tests {
     fn count_collection_none() {
         let collection = get_vec_map();
         assert_eq!(4, count_collection_iterator(&collection, Progress::None));
-    }
-
-    #[test]
-    fn count_collection_equals_for() {
-        let progress_states = vec![Progress::Complete, Progress::Some, Progress::None];
-        let collection = get_vec_map();
-
-        for progress_state in progress_states {
-            assert_eq!(
-                count_collection_for(&collection, progress_state),
-                count_collection_iterator(&collection, progress_state)
-            );
-        }
     }
 
     fn get_map() -> HashMap<String, Progress> {

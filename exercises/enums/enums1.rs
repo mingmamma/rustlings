@@ -2,11 +2,14 @@
 //
 // No hints this time! ;)
 
-// I AM NOT DONE
-
+// field-less enum with all unit enum variants
+// https://doc.rust-lang.org/reference/items/enumerations.html#unit-only-enum
 #[derive(Debug)]
 enum Message {
-    // TODO: define a few types of messages as used below
+    Quit,
+    Echo,
+    Move,
+    ChangeColor,
 }
 
 fn main() {

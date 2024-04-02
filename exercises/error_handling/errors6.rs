@@ -9,11 +9,16 @@
 // Execute `rustlings hint errors6` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
 use std::num::ParseIntError;
 
-// This is a custom error type that we will be using in `parse_pos_nonzero()`.
+// This is a custom error type that we will be using in `parse_pos_nonzero()`
+// s.t. it provides fine-grain modelling of two classes of anticipated errors
+// when carry out `parse_pos_nonzero`
+// ParseInt variant is a wrapped of ParseIntError which models errors from carrying out a parsing call 
+// on string slice, e.g. s.parse::<i64>()
+// Creation variant is a wrapped of CreationError custom enum type, which byself further models two types of 
+// errors from carrying out a PositiveNonZeroInteger value initialization call on a value of signed interger type
+// e.g. the variant Negative results from a negive input, and the variant Zero results from a zero input
 #[derive(PartialEq, Debug)]
 enum ParsePosNonzeroError {
     Creation(CreationError),
@@ -24,14 +29,16 @@ impl ParsePosNonzeroError {
     fn from_creation(err: CreationError) -> ParsePosNonzeroError {
         ParsePosNonzeroError::Creation(err)
     }
-    // TODO: add another error conversion function here.
-    // fn from_parseint...
+
+    fn from_parseint(err: ParseIntError) -> ParsePosNonzeroError {
+        ParsePosNonzeroError::ParseInt(err)
+    }
+
 }
 
 fn parse_pos_nonzero(s: &str) -> Result<PositiveNonzeroInteger, ParsePosNonzeroError> {
-    // TODO: change this to return an appropriate error instead of panicking
-    // when `parse()` returns an error.
-    let x: i64 = s.parse().unwrap();
+    // type effect of map_err applications are both: Result<i64, ParseIntError> =>  Result<i64, ParsePosNonzeroError>
+    let x: i64 = s.parse().map_err(ParsePosNonzeroError::from_parseint)?;
     PositiveNonzeroInteger::new(x).map_err(ParsePosNonzeroError::from_creation)
 }
 
@@ -62,7 +69,11 @@ mod test {
 
     #[test]
     fn test_parse_error() {
-        // We can't construct a ParseIntError, so we have to pattern match.
+        // We can't construct a value of ParseIntError type, so we have to pattern match
+        // since ParseIntError is not a custom type. It is a public struct in std::num module
+        // with all private fields and no public methods for construction s.t. manual creation of
+        // a value of this type is not permissible
+        // https://doc.rust-lang.org/std/num/struct.ParseIntError.html
         assert!(matches!(
             parse_pos_nonzero("not a number"),
             Err(ParsePosNonzeroError::ParseInt(_))

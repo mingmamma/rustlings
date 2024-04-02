@@ -14,8 +14,6 @@
 // Execute `rustlings hint hashmaps2` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
 use std::collections::HashMap;
 
 #[derive(Hash, PartialEq, Eq)]
@@ -27,7 +25,7 @@ enum Fruit {
     Pineapple,
 }
 
-fn fruit_basket(basket: &mut HashMap<Fruit, u32>) {
+fn supplement_fruit_basket(basket: &mut HashMap<Fruit, u32>) {
     let fruit_kinds = vec![
         Fruit::Apple,
         Fruit::Banana,
@@ -37,9 +35,10 @@ fn fruit_basket(basket: &mut HashMap<Fruit, u32>) {
     ];
 
     for fruit in fruit_kinds {
-        // TODO: Insert new fruits if they are not already present in the
-        // basket. Note that you are not allowed to put any type of fruit that's
-        // already present!
+        // entry() and or_insert() sequence to "add a new key and respective value only if not already present"
+        // https://doc.rust-lang.org/book/ch08-03-hash-maps.html#adding-a-key-and-value-only-if-a-key-isnt-present
+        // https://doc.rust-lang.org/std/collections/hash_map/enum.Entry.html#method.or_insert
+        basket.entry(fruit).or_insert(2);
     }
 }
 
@@ -60,7 +59,7 @@ mod tests {
     #[test]
     fn test_given_fruits_are_not_modified() {
         let mut basket = get_fruit_basket();
-        fruit_basket(&mut basket);
+        supplement_fruit_basket(&mut basket);
         assert_eq!(*basket.get(&Fruit::Apple).unwrap(), 4);
         assert_eq!(*basket.get(&Fruit::Mango).unwrap(), 2);
         assert_eq!(*basket.get(&Fruit::Lychee).unwrap(), 5);
@@ -69,7 +68,7 @@ mod tests {
     #[test]
     fn at_least_five_types_of_fruits() {
         let mut basket = get_fruit_basket();
-        fruit_basket(&mut basket);
+        supplement_fruit_basket(&mut basket);
         let count_fruit_kinds = basket.len();
         assert!(count_fruit_kinds >= 5);
     }
@@ -77,7 +76,7 @@ mod tests {
     #[test]
     fn greater_than_eleven_fruits() {
         let mut basket = get_fruit_basket();
-        fruit_basket(&mut basket);
+        supplement_fruit_basket(&mut basket);
         let count = basket.values().sum::<u32>();
         assert!(count > 11);
     }
@@ -85,7 +84,9 @@ mod tests {
     #[test]
     fn all_fruit_types_in_basket() {
         let mut basket = get_fruit_basket();
-        fruit_basket(&mut basket);
+        supplement_fruit_basket(&mut basket);
+        // Unsure how to relate the type of the iterated item of for and the type of the associated type Item of Iterator trait?!
+        // https://doc.rust-lang.org/std/collections/hash_map/struct.Values.html#impl-Iterator-for-Values%3C'a,+K,+V%3E
         for amount in basket.values() {
             assert_ne!(amount, &0);
         }

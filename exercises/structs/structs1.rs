@@ -5,13 +5,48 @@
 // Execute `rustlings hint structs1` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
 struct ColorClassicStruct {
-    // TODO: Something goes here
+    red: i32,
+    green: i32,
+    blue: i32,
 }
 
-struct ColorTupleStruct(/* TODO: Something goes here */);
+struct ColorClassicStruct2 {
+    red: i32,
+    green: i32,
+    blue: i32,
+    label: String,
+}
+
+// Contrast the visibility modification on the same struct defined in a module
+// To construct the comparable struct in a test function in the tests module,
+// the `pub` keyword before the struct name enables accessing the struct under the `Foo` module
+// whereas the `foo` module does NOT need `pub` keyword since it is already a visiable item in the
+// parent module to the item of the test function in the child module `tests`
+mod foo {
+    pub struct ColorClassicStruct2 {
+        red: i32,
+        green: i32,
+        blue: i32,
+        // Selectively modify some fields to pub s.t. ONLY those fields are accessible and can be changed
+        // by code in other modules
+        // https://doc.rust-lang.org/book/ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html#making-structs-and-enums-public
+        pub labels: Vec<String>, 
+    }
+
+    impl ColorClassicStruct2 {
+        pub fn get_green() -> ColorClassicStruct2 {
+            ColorClassicStruct2 {
+                red: 0,
+                green: 255,
+                blue: 0,
+                labels: vec!["green".to_string()], 
+            }
+        }
+    }
+}
+
+struct ColorTupleStruct(i32, i32, i32);
 
 #[derive(Debug)]
 struct UnitLikeStruct;
@@ -22,8 +57,11 @@ mod tests {
 
     #[test]
     fn classic_c_structs() {
-        // TODO: Instantiate a classic c struct!
-        // let green =
+        let green = ColorClassicStruct{
+            red: 0,
+            green: 255,
+            blue: 0,
+        };
 
         assert_eq!(green.red, 0);
         assert_eq!(green.green, 255);
@@ -31,9 +69,27 @@ mod tests {
     }
 
     #[test]
+    fn classic_c_structs_2() {
+        let mut green = foo::ColorClassicStruct2::get_green();
+
+        green.labels = vec!["green".to_string(), "rainbow".to_string()]; // might be more proper to do this line with map
+
+        let another_green = ColorClassicStruct2 {
+            red: 0,
+            green: 255,
+            blue: 0,
+            label: green.labels[0].clone(),
+            // label: green.labels[0], ?!
+        };
+    }
+
+    #[test]
     fn tuple_structs() {
-        // TODO: Instantiate a tuple struct!
-        // let green =
+        let green = ColorTupleStruct(
+            0,
+            255,
+            0,
+        );
 
         assert_eq!(green.0, 0);
         assert_eq!(green.1, 255);
@@ -42,9 +98,11 @@ mod tests {
 
     #[test]
     fn unit_structs() {
-        // TODO: Instantiate a unit-like struct!
-        // let unit_like_struct =
-        let message = format!("{:?}s are fun!", unit_like_struct);
+        // Instantiate a unit-like struct in equivalent ways
+        // https://doc.rust-lang.org/reference/expressions/struct-expr.html#unit-struct-expression
+        let unit_like_struct = UnitLikeStruct;
+        let unit_like_struct2: UnitLikeStruct = UnitLikeStruct{};
+        let message = format!("{:?}s are fun!", unit_like_struct2);
 
         assert_eq!(message, "UnitLikeStructs are fun!");
     }

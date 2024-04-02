@@ -19,15 +19,23 @@
 // Execute `rustlings hint errors2` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
 use std::num::ParseIntError;
 
+// reason for the concrete return type of Result<i32, ParseIntError> where ParseIntError type
+// of the err variant works with method call &str.parse::<32>() ?!
 pub fn total_cost(item_quantity: &str) -> Result<i32, ParseIntError> {
     let processing_fee = 1;
     let cost_per_item = 5;
-    let qty = item_quantity.parse::<i32>();
+    
+    // let qty = match item_quantity.parse::<i32>() {
+    //     Ok(quantity) => Ok(quantity * cost_per_item + processing_fee),
+    //     Err(e) => Err(e),
+    // };
+    // qty
 
+    // Turbofish syntax is for "paths with generic parameters in expressions"?!
+    // https://doc.rust-lang.org/reference/glossary.html#turbofish
+    let qty = item_quantity.parse::<i32>()?;
     Ok(qty * cost_per_item + processing_fee)
 }
 
@@ -43,6 +51,9 @@ mod tests {
     #[test]
     fn item_quantity_is_an_invalid_number() {
         assert_eq!(
+            // unwarp_err is supposed to turn a value of Err(e) with e is of type E into e of type E
+            // In this case, e is a value of ParseIntError, whose to_string method is available as shown:
+            // https://doc.rust-lang.org/std/num/struct.ParseIntError.html#impl-ToString-for-T 
             total_cost("beep boop").unwrap_err().to_string(),
             "invalid digit found in string"
         );

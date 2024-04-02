@@ -7,14 +7,27 @@
 // Execute `rustlings hint traits1` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
 trait AppendBar {
     fn append_bar(self) -> Self;
+    fn append_bar_1(self) -> Self;
+    fn append_bar_2(self) -> Self;        
 }
 
 impl AppendBar for String {
-    // TODO: Implement `AppendBar` for type `String`.
+    // Implementations of `AppendBar` for type `String`.
+    fn append_bar(mut self) -> String {
+        self + "Bar"
+    }
+
+    fn append_bar_1(mut self) -> String {
+        // format!("{}Bar", self)
+        format!("{self}Bar")
+    }
+
+    fn append_bar_2(mut self) -> String {
+        self.push_str("Bar");
+        self
+    }
 }
 
 fn main() {
@@ -35,7 +48,7 @@ mod tests {
     #[test]
     fn is_bar_bar() {
         assert_eq!(
-            String::from("").append_bar().append_bar(),
+            String::from("").append_bar_1().append_bar_2(),
             String::from("BarBar")
         );
     }

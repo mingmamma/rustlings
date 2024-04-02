@@ -8,10 +8,9 @@
 // Execute `rustlings hint modules3` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
-// TODO: Complete this use statement
-use ???
+// glob-like syntax available to use declaration simultaneously binding two of paths with a common prefix s.t. it is one line
+// https://doc.rust-lang.org/reference/items/use-declarations.html
+use std::time::{SystemTime, UNIX_EPOCH};
 
 fn main() {
     match SystemTime::now().duration_since(UNIX_EPOCH) {

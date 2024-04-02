@@ -3,8 +3,9 @@
 // Execute `rustlings hint errors4` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
+// Assertion macro usage involving custom type `PositiveNonzeroInteger` relies on PartialEq for comparison
+// Also relies on Debug Debbug for formatting
+// https://doc.rust-lang.org/core/macro.assert_eq.html#
 #[derive(PartialEq, Debug)]
 struct PositiveNonzeroInteger(u64);
 
@@ -16,8 +17,13 @@ enum CreationError {
 
 impl PositiveNonzeroInteger {
     fn new(value: i64) -> Result<PositiveNonzeroInteger, CreationError> {
-        // Hmm... Why is this always returning an Ok value?
-        Ok(PositiveNonzeroInteger(value as u64))
+
+        let result = match value {
+            n if n == 0 => Err(CreationError::Zero),
+            n if n < 0 => Err(CreationError::Negative),
+            _ => Ok(PositiveNonzeroInteger(value as u64)),
+        };
+        result
     }
 }
 

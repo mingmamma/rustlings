@@ -22,14 +22,11 @@
 // Execute `rustlings hint errors5` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
 use std::error;
 use std::fmt;
 use std::num::ParseIntError;
 
-// TODO: update the return type of `main()` to make this compile.
-fn main() -> Result<(), Box<dyn ???>> {
+fn main() -> Result<(), Box<dyn error::Error>> {
     let pretend_user_input = "42";
     let x: i64 = pretend_user_input.parse()?;
     println!("output={:?}", PositiveNonzeroInteger::new(x)?);
@@ -57,7 +54,9 @@ impl PositiveNonzeroInteger {
     }
 }
 
-// This is required so that `CreationError` can implement `error::Error`.
+// Manual implementation of std::fmt::Display trait
+// in conjunction with derived implementation of std::fmt::Debug trait
+// enables the custom type to have implementation of std::error::Error trait
 impl fmt::Display for CreationError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let description = match *self {
@@ -68,4 +67,9 @@ impl fmt::Display for CreationError {
     }
 }
 
+// Implement std::error::Error trait on CreationError custom type
+// s.t. value of the type meet the basic expection of value of type E in Result<T, E>
+// The prequisite for implementing the trait for a custom type is that the custom
+// type implements Display and Debug trait s.t. they can self-decribe the error represented
+// https://doc.rust-lang.org/std/error/trait.Error.html
 impl error::Error for CreationError {}

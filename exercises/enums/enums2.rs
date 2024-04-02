@@ -3,13 +3,18 @@
 // Execute `rustlings hint enums2` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
+// Beyond simple fieldless enum, (tuple-like?!) enum variant and struct-like enum variant
+// https://doc.rust-lang.org/reference/items/enumerations.html#enumerations
 #[derive(Debug)]
 enum Message {
-    // TODO: define the different variants used below
+    Move{x: u32, y: u32},
+    Echo(String),
+    ChangeColor(u32, u32, u32),
+    Quit,
 }
 
+// Define a method associated with an enum item with an implementation item
+// in a similar fashion to defining methods of a struct item 
 impl Message {
     fn call(&self) {
         println!("{:?}", self);
