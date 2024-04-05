@@ -5,23 +5,36 @@
 // Execute `rustlings hint move_semantics2` or use the `hint` watch subcommand
 // for a hint.
 
-#[test]
+struct S1(i32);
+
+#[derive(Clone)]
+struct S2(i32);
+
 fn main() {
-    let vec0 = vec![22, 44, 66];
+    let mut vec0 = vec![22, 44, 66];
 
-    let mut vec1 = fill_vec(&vec0);
+    let vec1 = fill_vec(&mut vec0);
 
-    assert_eq!(vec0, vec![22, 44, 66]);
+    assert_eq!(vec0, vec![22, 44, 66, 88]);
     assert_eq!(vec1, vec![22, 44, 66, 88]);
+
+    let ref_i32: &i32 = &1;
+    let _cloned_ref_i32 = ref_i32.clone();
+
+    let ref_s: &S1 = &S1(1);
+    let _cloned_ref_s: &S1 = ref_s.clone();
+
+    let mut s2 = S2(1);
+    let mut_ref_s2 = &mut s2;
+    let _cloned_s2 = mut_ref_s2.clone();
+    let _another_cloned_s2 = (*mut_ref_s2).clone();
+    *mut_ref_s2 = S2(10);
+
+    println!("{}", s2.0);
 }
 
-fn fill_vec(vec: &Vec<i32>) -> Vec<i32> {
-    
-    // clone is made due the intention of the function that returns a owned Vector value
-    // with the input of a shared reference to a Vector value, hence a owned value must be created
-    let mut vec = vec.clone();
-
+fn fill_vec(vec: &mut Vec<i32>) -> Vec<i32> {
     vec.push(88);
 
-    vec
+    vec.clone()
 }
