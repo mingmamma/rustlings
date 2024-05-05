@@ -90,4 +90,22 @@ fn main() {
     }
     
     println!("The largest number is {}", largest);
+
+    let test_vec = vec!['a', 'b', 'c'];
+
+    // the iter() method of std::slice module applies on the Vec<char> via Deref coersion machinary,
+    // as if applied on a value of &[char]. Hence its return value implements Iterator<Item = &char>,
+    // from which it can be concluded the variable pattern following the `for` keyword would result
+    // in a variable matching type &char
+    // https://doc.rust-lang.org/std/slice/struct.Iter.html#
+    for ele in test_vec.iter() {
+        todo!()
+    }
+
+    // the same reasoning also applies to the call with further application of enumerate() method
+    // that returns an Enumerate iterator to conclude the types of matched tuple pattern
+    // https://doc.rust-lang.org/std/iter/struct.Enumerate.html#
+    for (index, value) in test_vec.iter().enumerate() {
+        todo!()
+    }
 }

@@ -7,14 +7,17 @@
 // Execute `rustlings hint from_into` or use the `hint` watch subcommand for a
 // hint.
 
+// explicit import not needed likely due to the trait is in prelude
+// use std::convert::From;
+
 #[derive(Debug)]
 struct Person {
     name: String,
     age: usize,
 }
 
-// We implement the Default trait to use it as a fallback
-// when the provided string is not convertible into a Person object
+// We implement the Default trait to specify a useful fallback default value for the implemented type
+// https://doc.rust-lang.org/std/default/trait.Default.html
 impl Default for Person {
     fn default() -> Person {
         Person {
@@ -24,40 +27,38 @@ impl Default for Person {
     }
 }
 
-// Your task is to complete this implementation in order for the line `let p =
-// Person::from("Mark,20")` to compile Please note that you'll need to parse the
-// age component into a `usize` with something like `"4".parse::<usize>()`. The
-// outcome of this needs to be handled appropriately.
-//
-// Steps:
-// 1. If the length of the provided string is 0, then return the default of
-//    Person.
-// 2. Split the given string on the commas present in it.
-// 3. Extract the first element from the split operation and use it as the name.
-// 4. If the name is empty, then return the default of Person.
-// 5. Extract the other element from the split operation and parse it into a
-//    `usize` as the age.
-// If while parsing the age, something goes wrong, then return the default of
-// Person Otherwise, then return an instantiated Person object with the results
-
 impl From<&str> for Person {
+
+    // implementation to parse a value of &str into a value of Person
+    // the intended use case and hence the signature type of the from method dictates that
+    // the FROM trait is meant to handle infalliable conversion s.t. the return type of the
+    // from() method is a non-null/non-error value of the conversion target type
     fn from(s: &str) -> Person {
-        if s.len() == 0 { return Person::default(); }
+        // If the length of the provided string is 0, then return the default of Person.
+        if s.len() == 0 { 
+            return Person::default(); 
+        }
+        // split the given string on the commas present in it. Extract the first element from the split operation and use it as the name. 
+        // If the name is empty, then return the default of Person.
         let parts: Vec<&str> = s.split(",").collect();
-        if parts.len() < 2 || parts[0].is_empty() || parts[1].is_empty() { return Person::default();}
-        // else {return Person{name: parts[1].to_string(), age: parts[2] as usize};}
+        if parts.len() < 2 || parts[0].is_empty() { 
+            return Person::default();
+        }
         let name = parts[0].to_string();
+        // Extract the other element from the split operation and parse it into a `usize` as the age. If while parsing the age, something goes wrong, 
+        // then return the default of Person. Otherwise, then return an instantiated Person object with the results        
         if let Ok(age) = parts[1].parse::<usize>() {
             return Person {name, age};
+        } else {
+            return Person::default();
         }
-        Person::default()
     }
 }
 
 fn main() {
-    // Use the `from` function
+    // Use the `from` function with parameter of &str type enabled by implementing the From trait on the Person type
     let p1 = Person::from("Mark,20");
-    // Since From is implemented for Person, we should be able to use Into
+    // Into trait is automatically available by the virtue of From trait having been implemented
     let p2: Person = "Gerald,70".into();
     println!("{:?}", p1);
     println!("{:?}", p2);
@@ -89,8 +90,7 @@ mod tests {
     }
     #[test]
     fn test_bad_age() {
-        // Test that "Mark,twenty" will return the default person due to an
-        // error in parsing age
+        // Test that "Mark,twenty" will return the default person due to an error in parsing age
         let p = Person::from("Mark,twenty");
         assert_eq!(p.name, "John");
         assert_eq!(p.age, 30);
